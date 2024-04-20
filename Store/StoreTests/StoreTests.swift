@@ -66,4 +66,54 @@ TOTAL: $7.97
 """
         XCTAssertEqual(expectedReceipt, receipt.output())
     }
+    
+    func testAddSingleItem() {
+        register.scan(Item(name: "Gum", priceEach: 99))
+        XCTAssertEqual(99, register.subtotal())
+        let receipt = register.total()
+        XCTAssertEqual(99, receipt.total())
+        let expectedReceipt = """
+Receipt:
+Gum: $0.99
+------------------
+TOTAL: $0.99
+"""
+        XCTAssertEqual(expectedReceipt, receipt.output())
+    }
+    
+    func testAddSingleItemAdditional() {
+        register.scan(Item(name: "Redbull", priceEach: 499))
+        XCTAssertEqual(499, register.subtotal())
+        let receipt = register.total()
+        XCTAssertEqual(499, receipt.total())
+        let expectedReceipt = """
+Receipt:
+Redbull: $4.99
+------------------
+TOTAL: $4.99
+"""
+        XCTAssertEqual(expectedReceipt, receipt.output())
+    }
+    
+    func testWeightedItems() {
+        register.scan(WeightedItem(name: "Apples", priceEach: 300, weight: 1.5))
+        XCTAssertEqual(450, register.subtotal())
+        register.scan(WeightedItem(name: "Apples", priceEach: 300, weight: 0.5))
+        XCTAssertEqual(600, register.subtotal())
+        register.scan(WeightedItem(name: "Ribeye", priceEach: 2999, weight: 1))
+        XCTAssertEqual(3599, register.subtotal())
+        let receipt = register.total()
+        XCTAssertEqual(3599, receipt.total())
+
+        let expectedReceipt = """
+Receipt:
+Apples (1.5 lbs): $4.5
+Apples (0.5 lbs): $1.5
+Ribeye (1.0 lbs): $29.99
+------------------
+TOTAL: $35.99
+"""
+        XCTAssertEqual(expectedReceipt, receipt.output())
+        
+    }
 }
